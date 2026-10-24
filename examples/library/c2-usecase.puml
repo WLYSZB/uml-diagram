@@ -1,0 +1,36 @@
+@startuml
+!include theme.puml
+' 图书馆借阅系统 · 用例图（含 include / extend）
+
+left to right direction
+
+actor 读者 as R
+actor 管理员 as A
+actor "通知系统" as N
+
+rectangle 图书借阅系统 {
+  usecase "登录" as UC0
+  usecase "查询图书" as UC1
+  usecase "借书" as UC2
+  usecase "还书" as UC3
+  usecase "续借" as UC4
+  usecase "缴纳罚款" as UC5
+  usecase "催还通知" as UC6
+  usecase "预约图书" as UC7
+}
+
+R --> UC1
+R --> UC2
+R --> UC3
+R --> UC4
+A --> UC6
+
+UC1 ..> UC0 : <<include>>
+UC2 ..> UC0 : <<include>>
+UC4 ..> UC0 : <<include>>
+UC3 ..> UC0 : <<include>>
+UC2 ..> UC5 : <<extend>>
+UC2 ..> UC7 : <<extend>>
+UC6 ..> N
+
+@enduml

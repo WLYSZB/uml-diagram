@@ -1,0 +1,100 @@
+@startuml
+!include ../../templates/theme.puml
+' ============================================================
+'  图 3  存款与转账时序图
+'  依据：绘图方案.md §5（8 条生命线 / 28 条主流程消息 / 3 个 alt 共 11 分支）
+'  规范：同步消息实线实心箭头，返回消息虚线开放箭头
+'        返回消息不编号、写返回值；guard 条件用方括号
+'        不画判断菱形——分支一律用 alt 片段
+' ============================================================
+
+skinparam maxMessageSize 180
+
+actor 张三 as U
+participant ":ATMScreen" as SC
+participant ":CardReader" as CR
+participant ":ATMController" as CT
+participant ":CashDispenser" as CD
+participant "张三的账户 : Account" as A1
+participant "李四的账户 : Account" as A2
+participant ":SMSService" as SMS
+
+U -> CR : 插卡
+activate CT
+
+CR -> CT : 1. readCard()
+CR --> CT : 卡号
+CT -> SC : 2. 显示主菜单，提示输入密码
+U -> SC : 3. 输入密码
+SC -> CT : 4. password
+
+alt 密码正确
+  CT -> A1 : 5. validate(pwd)
+  A1 --> CT : 6. true
+  note right of CT : 进入主菜单
+else 密码错误，次数 < 3
+  CT --> SC : 提示"密码错误，还可再试 n 次"
+  note right of SC : 回到消息 3 重新输入
+else 密码错误，次数 = 3
+  CT -> CR : ejectCard()
+  CT -> SC : 显示"密码错误次数超限"
+  note right of SC : 会话终止，退卡
+end
+
+U -> SC : 7. 选择「存款」
+SC -> CT : 8. deposit()
+CT -> CD : 9. acceptCash(800)
+
+alt 点钞成功
+  U -> CD : 10. 放入现金 800
+  CD --> CT : 11. 点钞成功
+  CT -> A1 : 12. deposit(800)
+  A1 --> CT : 13. 余额 3800
+  CT -> SMS : 14. sendSMS(手机号, 存款 800 元)
+  CT -> SC : 15. 显示"存款成功，余额 3800 元"
+else 未放钞超时
+  CD --> CT : 超时，返回 false
+  CT -> SC : 显示"操作超时，交易已取消"
+  note right of SC : 无流水，余额不变
+else 钞票无法识别
+  CD --> CT : 退回 n 张
+  CT -> SC : 显示"请取走无法识别的钞票"
+  note right of SC : 可继续放钞，回到消息 10
+else 点钞计数异常
+  CD --> CT : 整笔拒收
+  CT -> SC : 显示"请到柜台办理"
+  note right of SC : 交易取消，无流水
+end
+
+U -> SC : 16. 选择「转账」，输入李四账号与金额
+SC -> CT : 17. transfer(6222…, 1000)
+
+alt 校验通过
+  CT -> A2 : 18. 查询账户状态
+  A2 --> CT : 19. 状态正常
+  CT -> A1 : 20. withdraw(1000)
+  A1 --> CT : 21. 扣款成功，余额 2800
+  CT -> A2 : 22. deposit(1000)
+  CT -> A1 : 23. addTransaction(转出 1000)
+  CT -> A2 : 24. addTransaction(转入 1000)
+  CT -> SMS : 25. sendSMS(转出方 + 转入方)
+  CT -> SC : 26. 显示"转账成功"并打印凭条
+else 收款账号不存在
+  A2 --> CT : null
+  CT -> SC : 显示"收款账号不存在"
+  note right of SC : 转账终止
+else 收款账户状态异常
+  A2 --> CT : status != 0
+  CT -> SC : 显示"对方账户状态异常"
+  note right of SC : 转账终止
+else 余额不足或超限额
+  A1 --> CT : 余额不足 / 超限
+  CT -> SC : 显示"余额不足/超出限额"
+  note right of SC : 转账终止
+end
+
+deactivate CT
+U -> CR : 27. 取卡
+CR --> U : 28. 退卡，交易结束
+
+@enduml

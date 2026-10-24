@@ -1,0 +1,36 @@
+' ============================================================
+'  UML 统一主题  ·  用法：@startuml 后写一行 !include theme.puml
+'
+'  布局引擎：默认用 Graphviz（dot）
+'    · 装了 Graphviz 效果最佳，用例图 / 组件图排布明显更整齐
+'    · 没装也能跑：取消下面 !pragma 那行的注释，改用内置 ELK（效果次之）
+' ============================================================
+
+' !pragma layout elk
+
+' 关掉类名前的彩色类型图标（C / I / E），标准 UML 不画这个
+hide circle
+
+skinparam defaultFontName "Microsoft YaHei"
+skinparam dpi 300
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam roundcorner 6
+
+skinparam ArrowColor #4a5568
+skinparam ArrowThickness 1.2
+skinparam ClassBackgroundColor #ffffff
+skinparam ClassBorderColor #4a5568
+skinparam ClassFontColor #1a202c
+skinparam ClassFontSize 13
+skinparam packageStyle rectangle
+skinparam PackageBackgroundColor #f7fafc
+skinparam PackageBorderColor #a0aec0
+
+skinparam UsecaseBackgroundColor #ffffff
+skinparam UsecaseBorderColor #4a5568
+skinparam ActorBorderColor #4a5568
+skinparam ActorBackgroundColor #ffffff
+
+skinparam NoteBackgroundColor #fffbea
+skinparam NoteBorderColor #d6b656

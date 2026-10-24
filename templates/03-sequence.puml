@@ -1,0 +1,33 @@
+@startuml
+!include theme.puml
+' ============ 时序图模板 ============
+' 图元：actor 角色  participant 参与者  boundary 边界  control 控制  entity 实体  database 数据库
+' 箭头：-> 同步  --> 返回  ->> 异步
+' 片段：alt/else 分支  loop 循环  opt 可选  par 并行
+' 激活：activate / deactivate，或 消息后接 ++
+
+actor 顾客
+participant "订单服务" as OS
+participant "支付网关" as PG
+database 库存库 as DB
+
+顾客 -> OS : 提交订单
+activate OS
+OS -> DB : 扣减库存
+DB --> OS : 扣减成功
+OS -> PG : 发起支付
+activate PG
+
+alt 支付成功
+  PG --> OS : 成功回调
+  OS --> 顾客 : 下单成功
+else 支付失败
+  PG --> OS : 失败
+  OS -> DB : 回滚库存
+  OS --> 顾客 : 下单失败
+end
+
+deactivate PG
+deactivate OS
+
+@enduml

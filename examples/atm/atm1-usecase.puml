@@ -1,0 +1,45 @@
+@startuml
+!include ../../templates/theme.puml
+' ============================================================
+'  图 1  ATM 取款机系统用例图
+'  依据：绘图方案.md §3（5 业务用例 + 2 支撑用例 + 2 外部参与者）
+'  规范：关联用实线不加箭头；include/extend 用虚线 + 开放箭头
+' ============================================================
+
+actor 客户 as C
+actor 银行主机 as HOST
+actor 短信网关 as SMS
+
+rectangle "ATM 取款机系统" {
+  usecase "存款" as UC1
+  usecase "取款" as UC2
+  usecase "转账" as UC3
+  usecase "查询余额" as UC4
+  usecase "更改密码" as UC5
+
+  usecase "验证密码" as UC6
+  usecase "短信通知" as UC7
+}
+
+' —— 关联：无箭头，全图统一 ——
+C -- UC1
+C -- UC2
+C -- UC3
+C -- UC4
+C -- UC5
+
+' —— include：箭头指向被包含用例 ——
+UC2 ..> UC6 : <<include>>
+UC3 ..> UC6 : <<include>>
+UC4 ..> UC6 : <<include>>
+UC5 ..> UC6 : <<include>>
+
+' —— extend：箭头指向被扩展（基本）用例 ——
+UC7 ..> UC1 : <<extend>>
+UC7 ..> UC2 : <<extend>>
+
+' —— 次要参与者 ——
+UC6 -- HOST
+UC7 -- SMS
+
+@enduml

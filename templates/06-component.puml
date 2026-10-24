@@ -1,0 +1,32 @@
+@startuml
+!include theme.puml
+' ============ 组件图模板 ============
+' [] 表示组件   () 表示接口   package 分组
+' database / queue / cloud 等图元也可用
+' 端口：[组件] - (接口名)
+
+package "前端" {
+  [Web 客户端]
+  [移动端 App]
+}
+
+package "后端" {
+  [订单服务]
+  [商品服务]
+  [用户服务]
+}
+
+database "MySQL" as DB
+queue "消息队列" as MQ
+
+() "订单 API" as API
+[Web 客户端] --> API
+[移动端 App] --> API
+API - [订单服务]
+
+[订单服务] --> [商品服务] : RPC
+[订单服务] --> DB : JDBC
+[订单服务] --> MQ : 扣减事件
+[商品服务] --> DB
+
+@enduml

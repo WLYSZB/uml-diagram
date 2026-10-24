@@ -1,0 +1,30 @@
+@startuml
+!include theme.puml
+' ============ 部署图模板 ============
+' node 节点（可嵌套，表示物理/虚拟部署单元）
+' artifact / [] 表示部署的构件
+' database 表示数据库服务器
+
+node "用户手机" {
+  [App]
+}
+
+node "云服务器" {
+  node "Nginx" {
+    [反向代理]
+  }
+  node "应用服务器" {
+    [订单服务]
+    [商品服务]
+  }
+}
+
+node "数据库服务器" {
+  database MySQL
+}
+
+[App] --> [反向代理] : HTTPS
+[反向代理] --> [订单服务]
+[订单服务] --> MySQL
+
+@enduml

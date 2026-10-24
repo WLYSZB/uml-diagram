@@ -1,0 +1,27 @@
+@startuml
+!include theme.puml
+' ============ 用例图模板 ============
+' 语法提示：actor 角色  usecase 用例  rectangle 系统边界
+' 关系：--> 关联    ..> <<include>> 包含    ..> <<extend>> 扩展
+' 布局建议：actor 数量控制在 3 个以内，线不容易绕
+
+left to right direction
+
+actor 顾客 as C
+actor 管理员 as A
+
+rectangle 电商系统 {
+  usecase "浏览商品" as UC1
+  usecase "提交订单" as UC2
+  usecase "支付" as UC3
+  usecase "管理库存" as UC4
+  usecase "查看推荐" as UC5
+}
+
+C --> UC1
+C --> UC2
+A --> UC4
+UC2 ..> UC3 : <<include>>
+UC5 ..> UC1 : <<extend>>
+
+@enduml

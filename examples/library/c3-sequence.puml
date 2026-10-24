@@ -1,0 +1,38 @@
+@startuml
+!include theme.puml
+' 图书馆借阅系统 · 时序图（正常流程 + 三条异常分支）
+
+actor 读者
+participant "借阅服务" as BS
+participant "库存服务" as SS
+participant "信用服务" as CS
+database "借阅库" as DB
+
+读者 -> BS : 提交借书请求(读者证号, ISBN)
+activate BS
+
+BS -> CS : 校验借阅资格
+CS --> BS : 结果
+alt 有逾期未还
+  BS --> 读者 : 拒绝：请先归还逾期图书
+  note right: 异常分支 1
+else 资格正常
+  BS -> SS : 查询可借副本
+  SS --> BS : 副本列表
+
+  alt 无可借副本
+    BS -> BS : 生成预约单
+    BS --> 读者 : 已预约，到馆通知
+    note right: 异常分支 2
+  else 有可借副本
+    BS -> DB : 写入借阅记录
+    DB --> BS : 记录编号
+    BS -> SS : 锁定副本
+    SS --> BS : 锁定成功
+    BS --> 读者 : 借书成功，应还日期
+  end
+end
+
+deactivate BS
+
+@enduml

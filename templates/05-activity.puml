@@ -1,0 +1,30 @@
+@startuml
+!include theme.puml
+' ============ 活动图模板 ============
+' start/stop 起止   :动作;   if/then/else 判断
+' 并行：fork / fork again / end fork
+' 泳道：|泳道名|
+
+|顾客|
+start
+:提交订单;
+
+|订单服务|
+:校验库存;
+if (库存充足?) then (是)
+  :锁定库存;
+  :生成支付单;
+else (否)
+  :通知补货;
+  :进入待处理队列;
+endif
+
+|支付网关|
+:发起支付;
+:回调结果;
+
+|订单服务|
+:返回结果;
+stop
+
+@enduml

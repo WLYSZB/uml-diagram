@@ -1,0 +1,44 @@
+@startuml
+!include theme.puml
+' ============ 类图模板 ============
+' 语法提示：+ public  - private  # protected  ~ package
+' 关系：--|> 继承   ..|> 实现   *-- 组合   o-- 聚合   --> 关联   ..> 依赖
+' 多重度写在引号里："1" *-- "0..*"
+' 注意：theme 已 hide circle，接口/枚举必须显式写 <<interface>> / <<enumeration>>，
+'       否则图上和普通类看不出区别（这两行标记就是标准 UML 的标注方式）
+
+package "订单域" {
+  class 订单 {
+    - 订单号: String
+    - 下单时间: DateTime
+    + 提交(): void
+    + 取消(原因: String): boolean
+  }
+  class 订单条目 {
+    - 数量: int
+    - 单价: BigDecimal
+  }
+}
+
+interface "支付接口" as PI <<interface>> {
+  + pay(金额: BigDecimal): boolean
+}
+
+class 用户 {
+  - 用户ID: Long
+  - 手机号: String
+}
+
+enum "订单状态" as ST <<enumeration>> {
+  待支付
+  已支付
+  已发货
+  已完成
+}
+
+用户 "1" --> "0..*" 订单 : 下单
+订单 "1" *-- "1..*" 订单条目 : 包含
+订单 --> ST
+订单 ..|> PI
+
+@enduml

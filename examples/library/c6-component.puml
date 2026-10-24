@@ -1,0 +1,40 @@
+@startuml
+!include theme.puml
+' 图书馆借阅系统 · 组件图
+
+package "接入层" {
+  [Web 门户]
+  [自助借还机]
+  [管理后台]
+}
+
+package "服务层" {
+  [借阅服务]
+  [库存服务]
+  [信用服务]
+  [通知服务]
+}
+
+package "数据层" {
+  database "借阅库" as DB1
+  database "图书库" as DB2
+  queue "消息队列" as MQ
+}
+
+() "借阅 API" as API1
+() "库存 API" as API2
+
+[Web 门户] --> API1
+[自助借还机] --> API1
+[管理后台] --> API1
+API1 - [借阅服务]
+
+[借阅服务] --> API2
+API2 - [库存服务]
+[借阅服务] --> [信用服务] : 校验资格
+[借阅服务] --> DB1 : 读写记录
+[库存服务] --> DB2 : 查询副本
+[借阅服务] --> MQ : 归还事件
+MQ --> [通知服务] : 消费
+
+@enduml

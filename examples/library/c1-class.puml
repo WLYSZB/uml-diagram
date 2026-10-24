@@ -1,0 +1,64 @@
+@startuml
+!include theme.puml
+' 图书馆借阅系统 · 类图（领域模型）
+
+package "借阅域" {
+  class 借阅记录 {
+    - 记录编号: String
+    - 借出时间: DateTime
+    - 应还时间: DateTime
+    - 归还时间: DateTime
+    - 状态: 借阅状态
+    + 计算逾期天数(): int
+    + 续借(天数: int): boolean
+  }
+  class 罚款 {
+    - 金额: BigDecimal
+    - 已缴: boolean
+    + 缴纳(): void
+  }
+}
+
+package "资源域" {
+  class 图书 {
+    - ISBN: String
+    - 书名: String
+    - 可借册数: int
+    + 是否可借(): boolean
+  }
+  class 馆藏副本 {
+    - 条码号: String
+    - 位置: String
+  }
+}
+
+class 读者 {
+  - 读者证号: String
+  - 姓名: String
+  - 逾期次数: int
+  + 是否可借阅(): boolean
+}
+
+class 管理员 {
+  - 工号: String
+}
+
+interface 通知服务 <<interface>> {
+  + 发送逾期提醒(读者证号: String): void
+}
+
+enum 借阅状态 <<enumeration>> {
+  待取书
+  借阅中
+  已归还
+  已逾期
+}
+
+读者 "1" --> "0..*" 借阅记录 : 借阅
+借阅记录 "0..*" --> "1" 馆藏副本 : 对应
+图书 "1" *-- "0..*" 馆藏副本 : 包含
+借阅记录 "1" --> "0..1" 罚款 : 产生
+管理员 "1" --> "0..*" 借阅记录 : 经办
+借阅记录 ..> 通知服务 : 逾期时调用
+
+@enduml

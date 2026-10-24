@@ -1,0 +1,24 @@
+@startuml
+!include theme.puml
+' 活动图 v3：仅 2 个泳道、无嵌套判断（对照 v2 的 4 泳道 + 3 层嵌套）
+
+|读者|
+start
+:放入图书 / 提交还书;
+
+|借阅服务|
+:扫描条码;
+if (记录不存在?) then (是)
+  :提示"无此借阅记录";
+  stop
+else (否)
+endif
+if (已逾期?) then (是)
+  :计算罚款并挂账;
+else (否)
+endif
+:更新记录为已归还;
+:返回还书成功;
+stop
+
+@enduml
