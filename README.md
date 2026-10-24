@@ -4,7 +4,22 @@ UML 图生成与校验 Skill，基于本地 PlantUML + Graphviz，支持七类 U
 
 ## 安装
 
-解压 `uml-diagram.zip`，将 `uml-diagram/` 放入 WorkBuddy 用户级 Skill 目录。
+适用于支持 Skill / 技能机制的 Agent。把下面的地址发给你的 Agent，请它直接安装：
+
+```text
+https://github.com/WLYSZB/uml-diagram
+```
+
+示例提示词：
+
+```text
+请根据这个地址安装 Skill：
+https://github.com/WLYSZB/uml-diagram
+```
+
+如果 Agent 不支持从 URL 安装，再下载 Release 中的 `uml-diagram.zip`，让 Agent 从本地压缩包安装。
+
+- Release 下载地址：https://github.com/WLYSZB/uml-diagram/releases/latest/download/uml-diagram.zip
 
 ## 支持图种
 
