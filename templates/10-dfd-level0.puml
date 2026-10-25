@@ -1,0 +1,27 @@
+@startuml
+!include theme.puml
+' @diagram dfd-level0
+' @parent 09-dfd-context.puml
+title DFD 0 层图：选课系统分解
+left to right direction
+
+rectangle "学生" as student <<external>>
+rectangle "教师" as teacher <<external>>
+rectangle "教务处" as admin <<external>>
+rectangle "1\n身份认证" as P1 <<process>>
+rectangle "2\n选课登记" as P2 <<process>>
+rectangle "3\n课表生成" as P3 <<process>>
+database "D1\n学生表" as D1 <<store>>
+database "D2\n选课表" as D2 <<store>>
+
+student --> P1 : 选课请求
+P1 --> P2 : 已认证请求
+P2 --> D2 : 选课记录
+D1 --> P2 : 学生信息
+P2 --> P3 : 已选课程
+P3 --> student : 选课结果
+teacher --> P2 : 成绩录入
+P2 --> teacher : 录入确认
+admin --> P2 : 课程计划
+P3 --> admin : 选课统计
+@enduml

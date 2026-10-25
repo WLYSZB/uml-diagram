@@ -1,0 +1,17 @@
+@startuml
+!include ../../templates/theme.puml
+' @diagram program-flow
+title 程序流程图：口令输入校验（直到型循环）
+
+start
+repeat
+  :输入口令 p;
+  if (长度不足 8 位 ?) then (是)
+    :提示口令过短;
+  else (否)
+    :校验字符种类;
+  endif
+repeat while (口令不合法 ?) is (是)
+:口令生效;
+stop
+@enduml

@@ -1,0 +1,15 @@
+@startuml
+!include ../../templates/theme.puml
+' @diagram dfd-context
+title DFD 顶层上下文图：图书借阅系统
+left to right direction
+
+rectangle "读者" as reader <<external>>
+rectangle "图书管理员" as librarian <<external>>
+rectangle "0\n图书借阅系统" as system <<process>>
+
+reader --> system : 借阅请求
+system --> reader : 借阅结果
+librarian --> system : 图书入库
+system --> librarian : 流通统计
+@enduml

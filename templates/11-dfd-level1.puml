@@ -1,0 +1,16 @@
+@startuml
+!include theme.puml
+' @diagram dfd-level1
+' @parent 10-dfd-level0.puml
+' @parent-process P1
+title DFD 1 层图：身份认证分解
+left to right direction
+
+rectangle "学生" as student <<external>>
+rectangle "1.1\n校验账号" as P11 <<process>>
+rectangle "1.2\n生成认证结果" as P12 <<process>>
+
+student --> P11 : 选课请求
+P11 --> P12 : 合法凭证
+P12 --> student : 认证结果
+@enduml

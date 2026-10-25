@@ -1,0 +1,16 @@
+@startuml
+!include theme.puml
+' @diagram communication
+title 通信图：下单交互
+left to right direction
+
+object ":OrderUI" as ui
+object ":OrderController" as ctl
+object ":Order" as ord
+object ":Inventory" as inv
+
+ui -> ctl : 1: submit()
+ctl -> ord : 1.1: create()
+ord -> inv : 1.1.1: check(sku)
+ctl --> ui : 2: showResult()
+@enduml

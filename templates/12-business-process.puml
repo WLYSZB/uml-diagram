@@ -1,0 +1,25 @@
+@startuml
+!include theme.puml
+' @diagram business-process
+title 业务流程图：请假审批
+
+|申请人|
+start
+:填写请假单;
+:提交审批;
+
+|部门主管|
+:审核请假单;
+if (同意 ?) then (是)
+  |人事处|
+  :登记考勤;
+  :归档;
+  |申请人|
+  :收到批准通知;
+else (否)
+  |申请人|
+  :收到驳回通知;
+  :修改或撤回;
+endif
+stop
+@enduml

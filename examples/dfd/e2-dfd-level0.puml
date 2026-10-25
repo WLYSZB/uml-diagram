@@ -1,0 +1,24 @@
+@startuml
+!include ../../templates/theme.puml
+' @diagram dfd-level0
+' @parent e1-dfd-context.puml
+title DFD 0 层图：图书借阅系统分解
+left to right direction
+
+rectangle "读者" as reader <<external>>
+rectangle "图书管理员" as librarian <<external>>
+rectangle "1\n读者核验" as P1 <<process>>
+rectangle "2\n借阅登记" as P2 <<process>>
+rectangle "3\n图书检索" as P3 <<process>>
+database "D1\n图书表" as D1 <<store>>
+database "D2\n借阅流水" as D2 <<store>>
+
+reader --> P1 : 借阅请求
+P1 --> P2 : 读者信息
+D1 --> P3 : 图书索引
+P3 --> P2 : 可借图书
+P2 --> D2 : 借阅记录
+P2 --> reader : 借阅结果
+librarian --> P2 : 图书入库
+P2 --> librarian : 流通统计
+@enduml

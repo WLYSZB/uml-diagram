@@ -1,0 +1,26 @@
+@startuml
+!include ../../templates/theme.puml
+' @diagram exception-flow
+title 异常分支流程图：用户登录
+
+start
+:输入账号口令;
+if (账号存在 ?) then (是)
+  if (口令正确 ?) then (是)
+    :生成会话;
+    :进入系统;
+  else (否·异常)
+    :累计失败次数;
+    if (连续失败达 5 次 ?) then (是)
+      :锁定账号;
+      :提示联系客服;
+    else (否)
+      :提示口令错误;
+    endif
+  endif
+else (否·异常)
+  :提示账号不存在;
+endif
+:结束登录;
+stop
+@enduml

@@ -1,0 +1,18 @@
+@startuml
+!include theme.puml
+' @diagram dfd-context
+title DFD 顶层上下文图：选课系统
+left to right direction
+
+rectangle "学生" as student <<external>>
+rectangle "教师" as teacher <<external>>
+rectangle "教务处" as admin <<external>>
+rectangle "0\n选课系统" as system <<process>>
+
+student --> system : 选课请求
+system --> student : 选课结果
+teacher --> system : 成绩录入
+system --> teacher : 录入确认
+admin --> system : 课程计划
+system --> admin : 选课统计
+@enduml

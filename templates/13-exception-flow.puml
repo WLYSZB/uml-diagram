@@ -1,0 +1,28 @@
+@startuml
+!include theme.puml
+' @diagram exception-flow
+title 异常分支流程图：下单校验
+
+start
+:提交订单;
+:校验库存;
+if (库存充足 ?) then (是)
+  :生成订单号;
+  :扣减库存;
+  if (支付成功 ?) then (是)
+    :订单生效;
+  else (否·异常)
+    :释放库存;
+    :订单置为待支付;
+  endif
+else (否·异常)
+  :提示缺货;
+  if (用户选择到货通知 ?) then (是)
+    :加入等待队列;
+  else (否)
+    :取消订单;
+  endif
+endif
+:返回结果;
+stop
+@enduml

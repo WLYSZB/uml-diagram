@@ -1,0 +1,18 @@
+@startuml
+!include ../../templates/theme.puml
+' @diagram dfd-level1
+' @parent e2-dfd-level0.puml
+' @parent-process P2
+title DFD 1 层图：借阅登记分解
+left to right direction
+
+rectangle "读者" as reader <<external>>
+rectangle "2.1\n检查借阅上限" as P21 <<process>>
+rectangle "2.2\n写借阅流水" as P22 <<process>>
+database "D2\n借阅流水" as D2 <<store>>
+
+reader --> P21 : 借阅请求
+P21 --> P22 : 允许借阅
+P22 --> D2 : 借阅记录
+P22 --> reader : 借阅结果
+@enduml

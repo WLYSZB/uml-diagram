@@ -1,0 +1,19 @@
+@startuml
+!include theme.puml
+' @diagram object
+title 对象图：订单快照
+
+object "用户1 : User" as user1 {
+  用户ID = 1001
+  姓名 = 张三
+}
+object "订单1 : Order" as order1 {
+  订单号 = "SO-001"
+  状态 = "待支付"
+}
+object "订单条目1 : OrderItem" as item1 {
+  数量 = 2
+}
+user1 --> order1 : 拥有
+order1 *-- item1 : 包含
+@enduml

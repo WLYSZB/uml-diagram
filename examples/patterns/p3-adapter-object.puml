@@ -1,0 +1,18 @@
+@startuml
+!include ../../templates/theme.puml
+title 设计模式 · 对象适配器（Object Adapter）
+
+interface 目标接口 <<interface>> {
+  + request(): void
+}
+class 适配者 {
+  + specificRequest(): String
+}
+class 对象适配器 {
+  - adaptee: 适配者
+  + request(): void
+}
+
+目标接口 <|.. 对象适配器
+对象适配器 o-- 适配者 : 委托
+@enduml

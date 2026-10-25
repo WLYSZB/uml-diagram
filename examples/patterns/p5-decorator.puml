@@ -1,0 +1,27 @@
+@startuml
+!include ../../templates/theme.puml
+title 设计模式 · 装饰器（Decorator）
+
+interface 组件 <<interface>> {
+  + operation(): String
+}
+class 具体组件 {
+  + operation(): String
+}
+class 装饰器基类 {
+  # component: 组件
+  + operation(): String
+}
+class 加粗装饰器 {
+  + operation(): String
+}
+class 颜色装饰器 {
+  + operation(): String
+}
+
+组件 <|.. 具体组件
+装饰器基类 ..|> 组件
+装饰器基类 o-- 组件 : 包装
+装饰器基类 <|-- 加粗装饰器
+装饰器基类 <|-- 颜色装饰器
+@enduml

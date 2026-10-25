@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "types": [
+    {"id": "class", "scope": "v1", "template": "templates/01-class.puml", "validator": null},
+    {"id": "usecase", "scope": "v1", "template": "templates/02-usecase.puml", "validator": null},
+    {"id": "sequence", "scope": "v1", "template": "templates/03-sequence.puml", "validator": null},
+    {"id": "state", "scope": "v1", "template": "templates/04-state.puml", "validator": null},
+    {"id": "activity", "scope": "v1", "template": "templates/05-activity.puml", "validator": null},
+    {"id": "component", "scope": "v1", "template": "templates/06-component.puml", "validator": null},
+    {"id": "deployment", "scope": "v1", "template": "templates/07-deployment.puml", "validator": null},
+    {"id": "program-flow", "scope": "v2-p0", "template": "templates/08-program-flow.puml", "validator": "flow"},
+    {"id": "dfd-context", "scope": "v2-p0", "template": "templates/09-dfd-context.puml", "validator": "dfd"},
+    {"id": "dfd-level0", "scope": "v2-p0", "template": "templates/10-dfd-level0.puml", "validator": "dfd"},
+    {"id": "dfd-level1", "scope": "v2-p0", "template": "templates/11-dfd-level1.puml", "validator": "dfd"},
+    {"id": "business-process", "scope": "v2-p0", "template": "templates/12-business-process.puml", "validator": "business"},
+    {"id": "exception-flow", "scope": "v2-p0", "template": "templates/13-exception-flow.puml", "validator": "exception"},
+    {"id": "object", "scope": "v2-p1", "template": "templates/14-object.puml", "validator": null},
+    {"id": "communication", "scope": "v2-p1", "template": "templates/15-communication.puml", "validator": null}
+  ]
+}

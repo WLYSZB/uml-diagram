@@ -1,0 +1,23 @@
+@startuml
+!include ../../templates/theme.puml
+title 设计模式 · 策略（Strategy）
+
+interface 排序策略 <<interface>> {
+  + sort(data: int[]): int[]
+}
+class 冒泡排序 {
+  + sort(data: int[]): int[]
+}
+class 快速排序 {
+  + sort(data: int[]): int[]
+}
+class 排序上下文 {
+  - strategy: 排序策略
+  + setStrategy(s: 排序策略): void
+  + doSort(data: int[]): int[]
+}
+
+排序策略 <|.. 冒泡排序
+排序策略 <|.. 快速排序
+排序上下文 o-- 排序策略 : 运行时可替换
+@enduml

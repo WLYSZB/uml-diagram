@@ -1,0 +1,27 @@
+@startuml
+!include ../../templates/theme.puml
+' @diagram business-process
+title 业务流程图：差旅报销
+
+|申请人|
+start
+:填写报销单;
+:上传票据;
+:提交审批;
+
+|部门主管|
+:初审报销单;
+if (票据齐全 ?) then (是)
+  :签批通过;
+else (否)
+  :退回并说明理由;
+  |申请人|
+  :修改后重新提交;
+endif
+
+|财务处|
+:复核并打款;
+|申请人|
+:查收报销款;
+stop
+@enduml

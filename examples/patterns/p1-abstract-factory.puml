@@ -1,0 +1,37 @@
+@startuml
+!include ../../templates/theme.puml
+title 设计模式 · 抽象工厂（Abstract Factory）
+
+interface 抽象工厂 <<interface>> {
+  + 创建按钮(): 抽象按钮
+  + 创建文本框(): 抽象文本框
+}
+interface 抽象按钮 <<interface>>
+interface 抽象文本框 <<interface>>
+
+class Windows工厂 {
+  + 创建按钮(): 抽象按钮
+  + 创建文本框(): 抽象文本框
+}
+class Mac工厂 {
+  + 创建按钮(): 抽象按钮
+  + 创建文本框(): 抽象文本框
+}
+class Windows按钮
+class Mac按钮
+class Windows文本框
+class Mac文本框
+class 客户端
+
+客户端 ..> 抽象工厂 : 只依赖抽象
+Windows工厂 ..|> 抽象工厂
+Mac工厂 ..|> 抽象工厂
+Windows按钮 ..|> 抽象按钮
+Mac按钮 ..|> 抽象按钮
+Windows文本框 ..|> 抽象文本框
+Mac文本框 ..|> 抽象文本框
+Windows工厂 ..> Windows按钮 : 创建
+Windows工厂 ..> Windows文本框 : 创建
+Mac工厂 ..> Mac按钮 : 创建
+Mac工厂 ..> Mac文本框 : 创建
+@enduml

@@ -1,0 +1,20 @@
+@startuml
+!include theme.puml
+' @diagram program-flow
+title 程序流程图：求 1~n 中偶数之和
+
+start
+:输入 n;
+:sum = 0;
+:i = 1;
+while (i <= n ?) is (是)
+  if (i % 2 == 0 ?) then (是)
+    :sum = sum + i;
+  else (否)
+    :跳过;
+  endif
+  :i = i + 1;
+endwhile (否)
+:输出 sum;
+stop
+@enduml

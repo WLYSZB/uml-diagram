@@ -1,0 +1,25 @@
+@startuml
+!include ../../templates/theme.puml
+title 设计模式 · 观察者（Observer）
+
+interface 观察者 <<interface>> {
+  + update(temp: float): void
+}
+class 温度显示板 {
+  + update(temp: float): void
+}
+class 高温警报器 {
+  + update(temp: float): void
+}
+class 气象站 {
+  - observers: List<观察者>
+  + attach(o: 观察者): void
+  + detach(o: 观察者): void
+  + notifyObservers(): void
+}
+
+观察者 <|.. 温度显示板
+观察者 <|.. 高温警报器
+气象站 o-- 观察者 : 观察者列表
+气象站 ..> 观察者 : 状态变化时通知
+@enduml

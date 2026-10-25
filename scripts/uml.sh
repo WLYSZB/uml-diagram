@@ -19,6 +19,7 @@ set -uo pipefail
 SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SELF_DIR/.." && pwd)"
 JAR="$SELF_DIR/plantuml.jar"
+CHECKER="$SELF_DIR/diagram_check.py"
 TPL_DIR="$ROOT_DIR/templates"
 WB_DIR="$ROOT_DIR/.workbuddy"
 
@@ -92,6 +93,24 @@ graphviz_ok() {
   return 1
 }
 
+# ---- 新图种语义校验：只处理带 @diagram 标记的文件，旧文件不引入 Python 依赖 ----
+semantic_check() {
+  local f="$1"
+  if ! grep -Eq "^[[:space:]]*'[[:space:]]*@diagram[[:space:]]" "$f"; then
+    return 0
+  fi
+  if [ ! -f "$CHECKER" ]; then
+    echo "[错误] 缺少图种语义校验器：$CHECKER" >&2
+    return 1
+  fi
+  local py="${UML_PYTHON:-python}"
+  if ! command -v "$py" >/dev/null 2>&1; then
+    echo "[错误] 图种语义校验需要 Python（可用 UML_PYTHON 指定）：$py" >&2
+    return 1
+  fi
+  "$py" "$(to_winpath "$CHECKER")" "$(to_winpath "$f")"
+}
+
 # ---- F2：逐文件校验。批量只给笼统错误，必须逐个跑才能定位；-syntax 会挂死，禁用 ----
 do_check() {
   local fail=0 f rc log
@@ -100,7 +119,12 @@ do_check() {
     log="$(java -jar "$JAR" -checkonly "$f" 2>&1)"
     rc=$?
     if [ "$rc" -eq 0 ]; then
-      echo "  [通过] $(basename "$f")"
+      if semantic_check "$f"; then
+        echo "  [通过] $(basename "$f")"
+      else
+        echo "  [失败] $(basename "$f")  (语义校验)" >&2
+        fail=1
+      fi
     else
       echo "  [失败] $(basename "$f")  (exit=$rc)"
       printf '%s\n' "$log" | sed 's/^/         /'
