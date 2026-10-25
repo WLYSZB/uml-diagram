@@ -1,0 +1,20 @@
+@startuml
+!include ../../templates/theme.puml
+' @diagram program-flow
+title 程序流程图：成绩等级判定（switch 多分支）
+
+start
+:输入成绩 g;
+switch (g ?)
+case (g >= 90 ?)
+  :评定为优秀;
+case (g >= 80 ?)
+  :评定为良好;
+case (g >= 60 ?)
+  :评定为及格;
+case (g < 60 ?)
+  :评定为不及格;
+endswitch
+:输出等级;
+stop
+@enduml

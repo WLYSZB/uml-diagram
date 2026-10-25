@@ -84,7 +84,8 @@ enum Foo <<enumeration>>
 
 ## 10. 程序流程图与业务流程图（v0.2）
 
-- 程序流程图（活动图语法）：**恰一个 start 一个 stop**；每个 `if` 的分支必须有 `then (标签)`，循环必须有 `is (标签)` 且闭合（`endwhile` / `repeat while`）；本版不支持 `switch`，多分支用 `if/elseif` 表达。
+- 程序流程图（活动图语法）：**恰一个 start，至少一个 stop**（多出口合法）；每个 `if` 的分支必须有 `then (标签)`，循环必须有 `is (标签)` 且闭合（`endwhile` / `repeat while`）。
+- 多分支用 `switch (条件?) / case (标签) / endswitch`，case 必须带标签。**switch 没有 else/default 兜底**——本机 PlantUML 1.2025.4 实测两种写法都是语法错误（rc=200）；剩余情况写显式 case（如 `case (g < 60 ?)`），范本见 `examples/flow/e3-flow-switch.puml`。
 - 当型循环 `while (条件?) is (是) … endwhile (否)`：先判断后执行；直到型 `repeat … repeat while (条件?) is (是)`：先执行后判断。两者语义不同，按业务选。
 - 业务流程图：**至少两个泳道**（`|角色名|`），跨泳道动作顺序即角色交接；判断分支标签是/否必须明确。
 - 异常分支流程图：每个失败分支必须给出**处理动作 + 后续出口**（提示、回滚、重试、终止……），不能只画判断不出路；异常分支标签建议带"异常"字样（如 `else (否·异常)`）。

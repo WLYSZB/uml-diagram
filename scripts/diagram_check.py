@@ -172,7 +172,7 @@ def validate_dfd(doc: Document, manifest: dict, visited: set[Path]) -> list[Chec
     processes = [n for n in nodes.values() if n.kind == "process"]
     stores = [n for n in nodes.values() if n.kind == "store"]
     externals = [n for n in nodes.values() if n.kind == "external"]
-    if not externals:
+    if not externals and doc.kind in {"dfd-context", "dfd-level0"}:
         errors.append(error(doc.path, 0, "", "DFD 至少需要一个外部实体"))
     if doc.kind == "dfd-context":
         if len(processes) != 1:
@@ -244,7 +244,9 @@ def validate_flow(doc: Document) -> list[CheckError]:
     errors = []
     starts = stops = 0
     lanes = 0
-    branches = []
+    # 块栈：元素 (kind, [分支是否已有动作])，kind 为 "if" 或 "switch"。
+    # exception-flow 要求每个失败分支（else/elseif/case）之后出现处理动作。
+    blocks: list[tuple[str, list[bool]]] = []
     for number, text in doc.lines:
         stripped = text.strip()
         if stripped == "start":
@@ -256,47 +258,67 @@ def validate_flow(doc: Document) -> list[CheckError]:
         if re.match(r"^if\s*\(", stripped):
             if not re.search(r"\bthen\s*\([^)]*\)", stripped):
                 errors.append(error(doc.path, number, text, "if 判断必须有 then 分支标签"))
-            branches.append([])
+            blocks.append(("if", []))
+        elif re.match(r"^switch\s*\(", stripped):
+            blocks.append(("switch", []))
+        elif re.match(r"^switch\b", stripped):
+            errors.append(error(doc.path, number, text, "switch 必须带条件括号，如 switch (成绩 ?)"))
+        elif re.match(r"^case\s*\([^)]*\)", stripped):
+            if not blocks or blocks[-1][0] != "switch":
+                errors.append(error(doc.path, number, text, "case 只能出现在 switch 块内"))
+            else:
+                blocks[-1][1].append(False)
+        elif re.match(r"^case\b", stripped):
+            errors.append(error(doc.path, number, text, "case 分支必须有标签，如 case (成绩 >= 90 ?)"))
         elif re.match(r"^elseif\s*\(", stripped):
-            if not branches:
+            if not blocks or blocks[-1][0] != "if":
                 errors.append(error(doc.path, number, text, "elseif 没有对应 if"))
             elif not re.search(r"\bthen\s*\([^)]*\)", stripped):
                 errors.append(error(doc.path, number, text, "elseif 判断必须有 then 分支标签"))
             else:
-                branches[-1].append(False)
-        elif stripped == "else" or stripped.startswith("else "):
-            if not branches:
+                blocks[-1][1].append(False)
+        elif stripped == "else" or stripped.startswith("else ") or stripped == "default":
+            if blocks and blocks[-1][0] == "switch":
+                errors.append(error(doc.path, number, text,
+                                    "switch 不支持 else/default 兜底分支（本机 PlantUML 1.2025.4 "
+                                    "实测语法错误）：剩余情况写显式 case（如 case (g < 60 ?)），或改用 if/elseif"))
+            elif not blocks:
                 errors.append(error(doc.path, number, text, "else 没有对应 if"))
             else:
                 if not re.search(r"^else(?:\s*\([^)]*\))?", stripped):
                     errors.append(error(doc.path, number, text, "else 分支标签格式无效"))
-                branches[-1].append(False)
+                blocks[-1][1].append(False)
         elif stripped == "endif":
-            if not branches:
+            if not blocks or blocks[-1][0] != "if":
                 errors.append(error(doc.path, number, text, "endif 没有对应 if"))
             else:
-                values = branches.pop()
+                _kind, values = blocks.pop()
+                if doc.kind == "exception-flow" and any(not value for value in values):
+                    errors.append(error(doc.path, number, text, "异常分支必须包含处理动作"))
+        elif stripped == "endswitch":
+            if not blocks or blocks[-1][0] != "switch":
+                errors.append(error(doc.path, number, text, "endswitch 没有对应 switch"))
+            else:
+                _kind, values = blocks.pop()
                 if doc.kind == "exception-flow" and any(not value for value in values):
                     errors.append(error(doc.path, number, text, "异常分支必须包含处理动作"))
         elif stripped.startswith(":"):
-            if branches:
-                for values in branches:
-                    if values:
-                        values[-1] = True
+            for _kind, values in blocks:
+                if values:
+                    values[-1] = True
         if re.match(r"^while\s*\(", stripped) and not re.search(r"\bis\s*\([^)]*\)", stripped):
             errors.append(error(doc.path, number, text, "while 循环必须有 is 分支标签"))
         if "repeat while" in stripped and not re.search(r"\bis\s*\([^)]*\)", stripped):
             errors.append(error(doc.path, number, text, "repeat while 必须有 is 分支标签"))
-        if re.match(r"^switch\b", stripped):
-            errors.append(error(doc.path, number, text, "本版图种不支持 switch，请使用 if/elseif"))
     if starts != 1:
         errors.append(error(doc.path, 0, "", f"流程图必须恰有一个 start，实际 {starts}"))
-    if stops != 1:
-        errors.append(error(doc.path, 0, "", f"流程图必须恰有一个 stop，实际 {stops}"))
-    if branches:
-        errors.append(error(doc.path, 0, "", "if/endif 分支未闭合"))
+    if stops < 1:
+        errors.append(error(doc.path, 0, "", f"流程图至少需要一个 stop，实际 {stops}（允许多出口）"))
+    if blocks:
+        errors.append(error(doc.path, 0, "", "if/switch 分支未闭合"))
     if doc.kind == "business-process" and lanes < 2:
-        errors.append(error(doc.path, 0, "", "业务流程图至少需要两个泳道"))
+        errors.append(error(doc.path, 0, "",
+                            "业务流程图至少需要两个泳道；单角色顺序流程请改用 program-flow 图种"))
     return errors
 
 
